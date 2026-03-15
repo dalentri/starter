@@ -14,5 +14,6 @@ class ReadDir:
         music_folder = Path(self.path)
 
         # Goes through the folder and lists all files
+        # TODO: Make this iterable in tui
         for item in music_folder.iterdir():
             print(item.name)

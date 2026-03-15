@@ -1,4 +1,5 @@
-import find_path, read_dir
+# Import the files from the same directory
+from . import find_path, read_dir
 
 
 def main():
