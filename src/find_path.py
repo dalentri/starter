@@ -3,6 +3,9 @@ from pathlib import Path
 
 
 class FindPath:
+    def __init__(self) -> None:
+        self.user_path = None
+
     # Finds the user's platform
     def find_platform(self) -> tuple:
 

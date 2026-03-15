@@ -16,4 +16,10 @@ class ReadDir:
         # Goes through the folder and lists all files
         # TODO: Make this iterable in tui
         for item in music_folder.iterdir():
-            print(item.name)
+            if not item.name.endswith(".m4a") and not item.name.startswith("."):
+                print(item.name)
+
+    def get_full_path(self, filename: str):
+        full_path = Path(self.path) / filename
+        print(full_path)
+        return str(full_path)
