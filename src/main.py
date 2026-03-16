@@ -1,6 +1,6 @@
 # Import the files from the same directory
 from . import find_path, read_dir, music_controls, tui
-import time
+from src.tui import TUI
 
 
 def main():
@@ -19,8 +19,8 @@ def main():
     )
     control_music.load_song()
     control_music.play_song()
-    time.sleep(10)
 
 
+app = TUI()
 if __name__ == "__main__":
-    main()
+    app.run()
