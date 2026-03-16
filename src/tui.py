@@ -9,7 +9,10 @@ class TUI(App):
 
     BINDINGS = [
         Binding(key="q", action="quit", description="Quit the app"),
-        Binding(key="s", action="start", description="Start song"),
+        Binding(key="s", action="play_song", description="Play selected song song"),
+        # vim bindings
+        Binding(key="j", action="move_down", description="Move down"),
+        Binding(key="k", action="move_up", description="Move up"),
     ]
 
     def __init__(self) -> None:
@@ -33,3 +36,26 @@ class TUI(App):
 
         songs = self.read_dir.scan_folder()
         table.add_rows(songs)
+
+    # All keybind functions mentioned in the footer
+
+    def action_move_down(self):
+        table = self.query_one(DataTable)
+        # Get the current row postition of the cursor
+        cur_pos = table.cursor_row
+
+        # If the cursor is at the end, wrap around
+        if cur_pos == table.row_count - 1:
+            table.move_cursor(row=0)
+        else:
+            table.move_cursor(row=cur_pos + 1)
+
+    def action_move_up(self):
+        table = self.query_one(DataTable)
+        cur_pos = table.cursor_row
+
+        if cur_pos == 0:
+            table_end = table.row_count - 1
+            table.move_cursor(row=table_end)
+        else:
+            table.move_cursor(row=cur_pos - 1)
