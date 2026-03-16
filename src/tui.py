@@ -1,5 +1,5 @@
 from textual.app import App, ComposeResult
-from textual.widgets import DataTable
+from textual.widgets import DataTable, Header
 from src.read_dir import ReadDir
 
 
@@ -10,11 +10,13 @@ class TUI(App):
         super().__init__()
         self.read_dir = ReadDir()
 
+    # Populates the tui with the defined components
     def compose(self) -> ComposeResult:
+        yield Header()
         yield DataTable()
 
     def on_mount(self) -> None:
-        # FIX: bro this aint working bruh omg *like heaby sigh emoji*
+        self.title = "starter"
         table = self.query_one(DataTable)
 
         table.add_column("title")
