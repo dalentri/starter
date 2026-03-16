@@ -1,10 +1,16 @@
 from textual.app import App, ComposeResult
-from textual.widgets import DataTable, Header
+from textual.widgets import DataTable, Header, Footer
+from textual.binding import Binding
 from src.read_dir import ReadDir
 
 
 class TUI(App):
     CSS_PATH = "tui.tcss"
+
+    BINDINGS = [
+        Binding(key="q", action="quit", description="Quit the app"),
+        Binding(key="s", action="start", description="Start song"),
+    ]
 
     def __init__(self) -> None:
         super().__init__()
@@ -14,6 +20,7 @@ class TUI(App):
     def compose(self) -> ComposeResult:
         yield Header()
         yield DataTable()
+        yield Footer()
 
     def on_mount(self) -> None:
         self.title = "starter"
