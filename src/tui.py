@@ -9,7 +9,7 @@ class TUI(App):
 
     BINDINGS = [
         Binding(key="q", action="quit", description="Quit the app"),
-        Binding(key="s", action="play_song", description="Play selected song song"),
+        Binding(key="s", action="play_song", description="Play selected song"),
         # vim bindings
         Binding(key="j", action="move_down", description="Move down"),
         Binding(key="k", action="move_up", description="Move up"),
