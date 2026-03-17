@@ -2,6 +2,7 @@ from textual.app import App, ComposeResult
 from textual.widgets import DataTable, Header, Footer
 from textual.binding import Binding
 from src.read_dir import ReadDir
+from src.music_controls import MusicControls
 
 
 class TUI(App):
@@ -18,6 +19,7 @@ class TUI(App):
     def __init__(self) -> None:
         super().__init__()
         self.read_dir = ReadDir()
+        self.music_controls = MusicControls()
 
     # Populates the tui with the defined components
     def compose(self) -> ComposeResult:
@@ -39,6 +41,7 @@ class TUI(App):
 
     # All keybind functions mentioned in the footer
 
+    # Movement keybinds
     def action_move_down(self):
         table = self.query_one(DataTable)
         # Get the current row postition of the cursor
@@ -59,3 +62,13 @@ class TUI(App):
             table.move_cursor(row=table_end)
         else:
             table.move_cursor(row=cur_pos - 1)
+
+    def action_play_song(self):
+        table = self.query_one(DataTable)
+        cur_pos = table.cursor_row
+        song_row = table.get_row_at(cur_pos)
+
+        song_path = song_row[3]
+
+        self.music_controls.load_song(song_path)
+        self.music_controls.play_song()
