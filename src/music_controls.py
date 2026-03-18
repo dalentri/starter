@@ -10,6 +10,8 @@ class MusicControls:
         self.song_path = ""
         self.current_volume = 0.5
         self.song_playing = False
+        # Takes note if the song actually made progress for unpause
+        self.song_elapsed = False
         self.shuffle_mode = False
 
     def load_song(self, song_path):
@@ -18,21 +20,26 @@ class MusicControls:
         # load the song
         music.load(song_path)
 
+        self.song_elapsed = False
+
     def pause_song(self):
         if self.song_playing:
             music.pause()
+            self.song_playing = False
         else:
             pass
 
     def unpause_song(self):
         if not self.song_playing:
             music.unpause()
+            self.song_playing = True
         else:
             pass
 
     def play_song(self):
         music.play()
-        pass
+        self.song_playing = True
+        self.song_elapsed = True
 
     def skip_song(self):
         pass

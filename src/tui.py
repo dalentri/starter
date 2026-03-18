@@ -10,7 +10,7 @@ class TUI(App):
 
     BINDINGS = [
         Binding(key="q", action="quit", description="Quit the app"),
-        Binding(key="s", action="play_song", description="Play selected song"),
+        Binding(key="h", action="play_pause", description="Play/pause"),
         # vim bindings
         Binding(key="j", action="move_down", description="Move down"),
         Binding(key="k", action="move_up", description="Move up"),
@@ -63,12 +63,22 @@ class TUI(App):
         else:
             table.move_cursor(row=cur_pos - 1)
 
-    def action_play_song(self):
+    def action_play_pause(self):
         table = self.query_one(DataTable)
         cur_pos = table.cursor_row
         song_row = table.get_row_at(cur_pos)
 
         song_path = song_row[3]
 
-        self.music_controls.load_song(song_path)
-        self.music_controls.play_song()
+        # If music not playing, play song
+        if not self.music_controls.song_playing:
+            # If the song played, resume it
+            if self.music_controls.song_elapsed:
+                self.music_controls.unpause_song()
+            # If the song hasn't played yet, start it
+            else:
+                self.music_controls.load_song(song_path)
+                self.music_controls.play_song()
+        # If music playing, pause the song
+        else:
+            self.music_controls.pause_song()
