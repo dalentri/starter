@@ -34,10 +34,11 @@ class TUI(App):
         table.add_column("title")
         table.add_column("artist")
         table.add_column("duration")
-        table.add_column("path")
 
         songs = self.read_dir.scan_folder()
-        table.add_rows(songs)
+        # table.add_rows(songs)
+        for song in songs:
+            table.add_row(song[0], song[1], song[2], key=song[3])
 
     # All keybind functions mentioned in the footer
 
