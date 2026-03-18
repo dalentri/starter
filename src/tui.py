@@ -1,3 +1,4 @@
+from src import music_controls
 from textual.app import App, ComposeResult
 from textual.widgets import DataTable, Header, Footer
 from textual.binding import Binding
@@ -67,19 +68,21 @@ class TUI(App):
     def action_play_pause(self):
         table = self.query_one(DataTable)
         cur_pos = table.cursor_row
-        song_row = table.get_row_at(cur_pos)
+        # song_row = table.get_row_at(cur_pos)
+        row_key = table.ordered_rows[cur_pos]
 
-        song_path = song_row[3]
+        song_path = row_key.key.value
+        # song_path = song_row[3]
 
-        # If music not playing, play song
-        if not self.music_controls.song_playing:
-            # If the song played, resume it
-            if self.music_controls.song_elapsed:
-                self.music_controls.unpause_song()
-            # If the song hasn't played yet, start it
+        # FIX: handle edge cases (if music played but clicked on another song)
+        if self.music_controls.song_playing:
+            if (
+                self.music_controls.song_elapsed
+                and self.music_controls.song_path == song_path
+            ):
+                self.music_controls.pause_song()
             else:
                 self.music_controls.load_song(song_path)
                 self.music_controls.play_song()
-        # If music playing, pause the song
         else:
-            self.music_controls.pause_song()
+            self.music_controls.unpause_song()
