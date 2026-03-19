@@ -1,7 +1,11 @@
-from src import music_controls
+# Library imports
 from textual.app import App, ComposeResult
 from textual.widgets import DataTable, Header, Footer
 from textual.binding import Binding
+from textual.content import Content
+import re
+
+# File imports
 from src.read_dir import ReadDir
 from src.music_controls import MusicControls
 
@@ -32,14 +36,39 @@ class TUI(App):
         self.title = "starter"
         table = self.query_one(DataTable)
 
-        table.add_column("title")
-        table.add_column("artist")
+        table.add_column("title", width=50)
+        table.add_column("artist", width=20)
         table.add_column("duration")
 
         songs = self.read_dir.scan_folder()
-        # table.add_rows(songs)
-        for song in songs:
-            table.add_row(song[0], song[1], song[2], key=song[3])
+
+        # Regex pattern to clean title and artist text
+        CLEAN_PATTERN = re.compile(r"[^\w\s\-\(\)\.\[\]\u4e00-\u9fff]")
+
+        # Stores the cleaned songs in a list
+        clean_songs = [
+            # tuple pattern for cleaned songs
+            (
+                CLEAN_PATTERN.sub("", song[0]),
+                CLEAN_PATTERN.sub("", song[1]),
+                song[2],
+                song[3],
+            )
+            # iterates through the list of uncleaned songs until completed
+            for song in songs
+        ]
+
+        # iterates through the cleaned songs and populates each row of the data table
+        for song in clean_songs:
+            # transform the title into a textual container and extract the text
+            song_title = Content(song[0]).plain
+
+            # If the length of the title is too long, cut it and add ellipses
+            if len(song_title) > 50:
+                song_title = song_title[:47] + "..."
+
+            # populate the table
+            table.add_row(song_title, song[1], song[2], key=song[3])
 
     # All keybind functions mentioned in the footer
 

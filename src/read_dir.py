@@ -1,5 +1,6 @@
 from pathlib import Path
 from tinytag import TinyTag
+import re
 
 
 # Reads the user specified music directory
@@ -14,6 +15,7 @@ class ReadDir:
         self.path = music_folder
         # Inits a list of the music that will be found later
         music_list = []
+        CLEAN_PATTERN = re.compile(r"[^\w\s\-\(\)\.\[\]\u4e00-\u9fff]")
 
         # Goes through the folder and lists all files
         for item in music_folder.iterdir():
