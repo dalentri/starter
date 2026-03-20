@@ -31,7 +31,6 @@ class ReadDir:
                 song_data = (
                     tag.title or item.name,
                     tag.artist or "Unknown",
-                    # TODO: Create a helper function that will format the duration
                     formatted_time,
                     str(item),
                 )

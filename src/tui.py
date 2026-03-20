@@ -105,6 +105,7 @@ class TUI(App):
 
     def action_play_pause(self):
         table = self.query_one(DataTable)
+        progress_bar = self.query_one(ProgressBar)
         cur_pos = table.cursor_row
         row_key = table.ordered_rows[cur_pos]
 
