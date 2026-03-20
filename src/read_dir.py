@@ -25,12 +25,14 @@ class ReadDir:
                 and item.is_file()
             ):
                 tag: TinyTag = TinyTag.get(item)
+                mins, secs = divmod(round(tag.duration), 60)
+                formatted_time = f"{mins:01}:{secs:02}"
 
                 song_data = (
                     tag.title or item.name,
                     tag.artist or "Unknown",
                     # TODO: Create a helper function that will format the duration
-                    tag.duration,
+                    formatted_time,
                     str(item),
                 )
 
