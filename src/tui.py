@@ -1,6 +1,7 @@
 # Library imports
 from textual.app import App, ComposeResult
-from textual.widgets import DataTable, Header, Footer
+from textual.widgets import DataTable, ProgressBar, Header, Footer, Label
+from textual.containers import Center, Middle, Horizontal, Vertical
 from textual.binding import Binding
 from textual.content import Content
 import re
@@ -25,15 +26,24 @@ class TUI(App):
         super().__init__()
         self.read_dir = ReadDir()
         self.music_controls = MusicControls()
+        self.current_song = "No song currently playing."
 
     # Populates the tui with the defined components
     def compose(self) -> ComposeResult:
         yield Header()
-        yield DataTable()
+        with Horizontal():
+            yield DataTable()
+            with Vertical():
+                with Center():
+                    with Middle():
+                        yield Label(self.current_song)
+                        yield ProgressBar()
         yield Footer()
 
     def on_mount(self) -> None:
         self.title = "starter"
+
+        # DataTable
         table = self.query_one(DataTable)
 
         table.add_column("title", width=50)
@@ -71,7 +81,6 @@ class TUI(App):
             table.add_row(song_title, song[1], song[2], key=song[3])
 
     # All keybind functions mentioned in the footer
-
     # Movement keybinds
     def action_move_down(self):
         table = self.query_one(DataTable)
@@ -97,13 +106,12 @@ class TUI(App):
     def action_play_pause(self):
         table = self.query_one(DataTable)
         cur_pos = table.cursor_row
-        # song_row = table.get_row_at(cur_pos)
         row_key = table.ordered_rows[cur_pos]
 
         song_path = row_key.key.value
-        # song_path = song_row[3]
 
-        # FIX: handle edge cases (if music played but clicked on another song)
+        self.query_one(Label).update(str(table.get_row_at(cur_pos)[0]))
+
         if self.music_controls.song_playing:
             if (
                 self.music_controls.song_elapsed
