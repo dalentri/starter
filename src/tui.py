@@ -1,4 +1,5 @@
 # Library imports
+import music_controls
 from textual.app import App, ComposeResult
 from textual.widgets import DataTable, ProgressBar, Header, Footer, Label
 from textual.containers import Center, Middle, Horizontal, Vertical
@@ -124,3 +125,9 @@ class TUI(App):
                 self.music_controls.play_song()
         else:
             self.music_controls.unpause_song()
+
+    def update_song_progress(self):
+        # Gets the current time of the currently playing song
+        current_time = self.music_controls.get_pos()
+        # Updates the progress bar to reflect the current song's time
+        self.query_one(ProgressBar).update(progress=current_time)
