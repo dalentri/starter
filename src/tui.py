@@ -1,5 +1,4 @@
 # Library imports
-import music_controls
 from textual.app import App, ComposeResult
 from textual.widgets import DataTable, ProgressBar, Header, Footer, Label
 from textual.containers import Center, Middle, Horizontal, Vertical
@@ -28,6 +27,8 @@ class TUI(App):
         self.read_dir = ReadDir()
         self.music_controls = MusicControls()
         self.current_song = "No song currently playing."
+        self.song_index = 0
+        self.song_duration = 0
 
     # Populates the tui with the defined components
     def compose(self) -> ComposeResult:
@@ -53,24 +54,8 @@ class TUI(App):
 
         songs = self.read_dir.scan_folder()
 
-        # Regex pattern to clean title and artist text
-        CLEAN_PATTERN = re.compile(r"[^\w\s\-\(\)\.\[\]\u4e00-\u9fff]")
-
-        # Stores the cleaned songs in a list
-        clean_songs = [
-            # tuple pattern for cleaned songs
-            (
-                CLEAN_PATTERN.sub("", song[0]),
-                CLEAN_PATTERN.sub("", song[1]),
-                song[2],
-                song[3],
-            )
-            # iterates through the list of uncleaned songs until completed
-            for song in songs
-        ]
-
         # iterates through the cleaned songs and populates each row of the data table
-        for song in clean_songs:
+        for song in songs:
             # transform the title into a textual container and extract the text
             song_title = Content(song[0]).plain
 
@@ -80,6 +65,8 @@ class TUI(App):
 
             # populate the table
             table.add_row(song_title, song[1], song[2], key=song[3])
+
+        self.track_timer = self.set_interval(1, self.update_song_progress, pause=True)
 
     # All keybind functions mentioned in the footer
     # Movement keybinds
@@ -106,13 +93,15 @@ class TUI(App):
 
     def action_play_pause(self):
         table = self.query_one(DataTable)
-        progress_bar = self.query_one(ProgressBar)
         cur_pos = table.cursor_row
+        self.song_index = cur_pos
         row_key = table.ordered_rows[cur_pos]
 
         song_path = row_key.key.value
 
         self.query_one(Label).update(str(table.get_row_at(cur_pos)[0]))
+        # set the current song duration from the array in the read_dir class
+        self.song_duration = self.read_dir.unformatted_times[self.song_index]
 
         if self.music_controls.song_playing:
             if (
@@ -120,14 +109,18 @@ class TUI(App):
                 and self.music_controls.song_path == song_path
             ):
                 self.music_controls.pause_song()
+                self.track_timer.pause()
             else:
                 self.music_controls.load_song(song_path)
                 self.music_controls.play_song()
+                self.track_timer.resume()
         else:
             self.music_controls.unpause_song()
+            self.track_timer.resume()
 
     def update_song_progress(self):
         # Gets the current time of the currently playing song
-        current_time = self.music_controls.get_pos()
+        current_time = self.music_controls.get_pos() / 1000
+        total_time = self.song_duration
         # Updates the progress bar to reflect the current song's time
-        self.query_one(ProgressBar).update(progress=current_time)
+        self.query_one(ProgressBar).update(total=total_time, progress=current_time)

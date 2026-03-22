@@ -8,6 +8,7 @@ class ReadDir:
     # straight forward init
     def __init__(self) -> None:
         self.path = None
+        self.unformatted_times = []
 
     # Scans the user's folder for files / directories
     def scan_folder(self):
@@ -15,7 +16,7 @@ class ReadDir:
         self.path = music_folder
         # Inits a list of the music that will be found later
         music_list = []
-        CLEAN_PATTERN = re.compile(r"[^\w\s\-\(\)\.\[\]\u4e00-\u9fff]")
+        unformatted_times = []
 
         # Goes through the folder and lists all files
         for item in music_folder.iterdir():
@@ -25,18 +26,28 @@ class ReadDir:
                 and item.is_file()
             ):
                 tag: TinyTag = TinyTag.get(item)
+                # Keep a copy of the unformatted times
+                unformatted_times.append(tag.duration)
+
                 mins, secs = divmod(round(tag.duration), 60)
                 formatted_time = f"{mins:01}:{secs:02}"
 
+                # Regex pattern to clean title and artist text
+                CLEAN_PATTERN = re.compile(r"[^\w\s\-\(\)\.\[\]\u4e00-\u9fff]")
+
                 song_data = (
-                    tag.title or item.name,
-                    tag.artist or "Unknown",
+                    CLEAN_PATTERN.sub("", tag.title)
+                    if tag.title
+                    else CLEAN_PATTERN.sub("", item.name),
+                    CLEAN_PATTERN.sub("", tag.artist) if tag.artist else "Unknown",
                     formatted_time,
                     str(item),
                 )
 
                 # Append the tuple to the list
                 music_list.append(song_data)
+
+        self.unformatted_times = unformatted_times
         return music_list
 
     def get_full_path(self, filename: str):
