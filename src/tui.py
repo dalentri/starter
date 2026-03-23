@@ -118,6 +118,10 @@ class TUI(App):
             self.music_controls.unpause_song()
             self.track_timer.resume()
 
+    def action_repeat_song(self):
+        if self.song_duration == self.music_controls.get_pos():
+            self.music_controls.play_song()
+
     def update_song_progress(self):
         # Gets the current time of the currently playing song
         current_time = self.music_controls.get_pos() / 1000
