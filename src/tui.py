@@ -4,7 +4,6 @@ from textual.widgets import DataTable, ProgressBar, Header, Footer, Label
 from textual.containers import Center, Middle, Horizontal, Vertical
 from textual.binding import Binding
 from textual.content import Content
-import re
 
 # File imports
 from src.read_dir import ReadDir
@@ -17,6 +16,7 @@ class TUI(App):
     BINDINGS = [
         Binding(key="q", action="quit", description="Quit the app"),
         Binding(key="h", action="play_pause", description="Play/pause"),
+        Binding(key="r", action="repeat_song", description="Repeat song"),
         # vim bindings
         Binding(key="j", action="move_down", description="Move down"),
         Binding(key="k", action="move_up", description="Move up"),
