@@ -4,7 +4,6 @@ from textual.widgets import DataTable, ProgressBar, Header, Footer, Label
 from textual.containers import Center, Middle, Horizontal, Vertical
 from textual.binding import Binding
 from textual.content import Content
-import re
 
 # File imports
 from src.read_dir import ReadDir
@@ -103,19 +102,23 @@ class TUI(App):
         # set the current song duration from the array in the read_dir class
         self.song_duration = self.read_dir.unformatted_times[self.song_index]
 
-        if self.music_controls.song_playing:
-            if (
-                self.music_controls.song_elapsed
-                and self.music_controls.song_path == song_path
-            ):
+        # BUG: music doesn't unpause on pause and unpause
+        if (
+            self.music_controls.song_elapsed
+            and self.music_controls.song_path == song_path
+        ):
+            if self.music_controls.song_playing:
                 self.music_controls.pause_song()
                 self.track_timer.pause()
             else:
-                self.music_controls.load_song(song_path)
-                self.music_controls.play_song()
+                self.music_controls.unpause_song()
                 self.track_timer.resume()
-        else:
-            self.music_controls.unpause_song()
+        elif (
+            not self.music_controls.song_elapsed
+            or not self.music_controls.song_path == song_path
+        ):
+            self.music_controls.load_song(song_path)
+            self.music_controls.play_song()
             self.track_timer.resume()
 
     def update_song_progress(self):

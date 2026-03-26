@@ -52,6 +52,5 @@ class MusicControls:
 
     def set_volume(self):
         pass
-
     def get_pos(self):
         return music.get_pos()
