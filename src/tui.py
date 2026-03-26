@@ -102,17 +102,20 @@ class TUI(App):
         # set the current song duration from the array in the read_dir class
         self.song_duration = self.read_dir.unformatted_times[self.song_index]
 
-        # BUG: music doesn't unpause on pause and unpause
+        # If the song went on and the user is hovering the same song...
         if (
             self.music_controls.song_elapsed
             and self.music_controls.song_path == song_path
         ):
+            # ... and if the song is currently playing
             if self.music_controls.song_playing:
                 self.music_controls.pause_song()
                 self.track_timer.pause()
+            # if the song isnt playing
             else:
                 self.music_controls.unpause_song()
                 self.track_timer.resume()
+        # else if the song hasn't started yet or the user hovered a different track...
         elif (
             not self.music_controls.song_elapsed
             or not self.music_controls.song_path == song_path
