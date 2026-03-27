@@ -1,4 +1,5 @@
 # Library imports
+import pygame
 from textual.app import App, ComposeResult
 from textual.widgets import DataTable, ProgressBar, Header, Footer, Label
 from textual.containers import Center, Middle, Horizontal, Vertical
@@ -67,6 +68,7 @@ class TUI(App):
             table.add_row(song_title, song[1], song[2], key=song[3])
 
         self.track_timer = self.set_interval(1, self.update_song_progress, pause=True)
+        self.set_interval(0.1, self.check_pygame_events)
 
     # All keybind functions mentioned in the footer
     # Movement keybinds
@@ -119,8 +121,17 @@ class TUI(App):
             self.track_timer.resume()
 
     def action_repeat_song(self):
-        if self.song_duration == self.music_controls.get_pos():
-            self.music_controls.play_song()
+        self.music_controls.repeat()
+
+        self.query_one("Footer").refresh()
+
+    def check_pygame_events(self):
+        for event in pygame.event.get():
+            if (
+                event.type == self.music_controls.SONG_FINISHED
+                and self.music_controls.repeat_mode
+            ):
+                self.music_controls.play_song()
 
     def update_song_progress(self):
         # Gets the current time of the currently playing song

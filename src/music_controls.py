@@ -1,5 +1,6 @@
 from pygame import mixer
 from pygame.mixer import music
+import pygame
 
 
 # Responsible for controlling the music
@@ -13,6 +14,10 @@ class MusicControls:
         # Takes note if the song actually made progress for unpause
         self.song_elapsed = False
         self.shuffle_mode = False
+        self.repeat_mode = False
+
+        self.SONG_FINISHED = pygame.USEREVENT + 1
+        music.set_endevent(self.SONG_FINISHED)
 
     def load_song(self, song_path):
         # update the state of the object to be the passed in path
@@ -55,3 +60,9 @@ class MusicControls:
 
     def get_pos(self):
         return music.get_pos()
+
+    def repeat(self):
+        if self.repeat_mode:
+            repeat_mode = False
+        else:
+            self.repeat_mode = True
