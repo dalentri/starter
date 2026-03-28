@@ -3,6 +3,7 @@ import pygame
 from textual.app import App, ComposeResult
 from textual.widgets import DataTable, ProgressBar, Header, Footer, Label
 from textual.containers import Center, Middle, Horizontal, Vertical
+from textual.reactive import reactive
 from textual.binding import Binding
 from textual.content import Content
 
@@ -17,11 +18,13 @@ class TUI(App):
     BINDINGS = [
         Binding(key="q", action="quit", description="Quit the app"),
         Binding(key="h", action="play_pause", description="Play/pause"),
-        Binding(key="r", action="repeat_song", description="Repeat song"),
+        # Binding(key="r", action="repeat_song", description="Repeat: OFF"),
         # vim bindings
         Binding(key="j", action="move_down", description="Move down"),
         Binding(key="k", action="move_up", description="Move up"),
     ]
+
+    repeat_mode = reactive(False, always_update=True)
 
     def __init__(self) -> None:
         super().__init__()
@@ -121,9 +124,14 @@ class TUI(App):
             self.track_timer.resume()
 
     def action_repeat_song(self):
-        self.music_controls.repeat()
+        self.repeat_mode = not self.repeat_mode
+        self.music_controls.repeat_mode = self.repeat_mode
 
-        self.query_one("Footer").refresh()
+    def watch_repeat_mode(self, repeat_mode: bool):
+        new_label = "Repeat: ON" if repeat_mode else "Repeat: OFF"
+        self.music_controls.repeat_mode = repeat_mode
+        self.bind("r", "repeat_song", description=new_label)
+        self.refresh_bindings()
 
     def check_pygame_events(self):
         for event in pygame.event.get():

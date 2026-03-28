@@ -1,6 +1,7 @@
 from pygame import mixer
 from pygame.mixer import music
 import pygame
+import os
 
 
 # Responsible for controlling the music
@@ -18,6 +19,10 @@ class MusicControls:
 
         self.SONG_FINISHED = pygame.USEREVENT + 1
         music.set_endevent(self.SONG_FINISHED)
+
+        os.environ["SDL_VIDEODRIVER"] = "dummy"
+        pygame.init()
+        pygame.display.set_mode((1, 1))
 
     def load_song(self, song_path):
         # update the state of the object to be the passed in path
@@ -62,7 +67,4 @@ class MusicControls:
         return music.get_pos()
 
     def repeat(self):
-        if self.repeat_mode:
-            repeat_mode = False
-        else:
-            self.repeat_mode = True
+        self.repeat_mode = not self.repeat_mode
