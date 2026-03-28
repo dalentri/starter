@@ -1,4 +1,5 @@
 # Library imports
+import pygame
 from textual.app import App, ComposeResult
 from textual.widgets import DataTable, ProgressBar, Header, Footer, Label
 from textual.containers import Center, Middle, Horizontal, Vertical
@@ -16,6 +17,7 @@ class TUI(App):
     BINDINGS = [
         Binding(key="q", action="quit", description="Quit the app"),
         Binding(key="h", action="play_pause", description="Play/pause"),
+        Binding(key="r", action="repeat_song", description="Repeat"),
         # vim bindings
         Binding(key="j", action="move_down", description="Move down"),
         Binding(key="k", action="move_up", description="Move up"),
@@ -34,10 +36,12 @@ class TUI(App):
         yield Header()
         with Horizontal():
             yield DataTable()
-            with Vertical():
-                with Center():
-                    with Middle():
-                        yield Label(self.current_song)
+            with Vertical(id="right-side"):
+                with Middle():
+                    with Center():
+                        with Horizontal(id="status-row"):
+                            yield Label(self.current_song)
+                            yield Label("", id="repeat-label")
                         yield ProgressBar()
         yield Footer()
 
@@ -66,6 +70,7 @@ class TUI(App):
             table.add_row(song_title, song[1], song[2], key=song[3])
 
         self.track_timer = self.set_interval(1, self.update_song_progress, pause=True)
+        self.set_interval(0.1, self.check_pygame_events)
 
     # All keybind functions mentioned in the footer
     # Movement keybinds
@@ -114,6 +119,9 @@ class TUI(App):
             # if the song isnt playing
             else:
                 self.music_controls.unpause_song()
+                self.music_controls.load_song(song_path)
+                self.music_controls.play_song()
+                self.repeat_mode = False
                 self.track_timer.resume()
         # else if the song hasn't started yet or the user hovered a different track...
         elif (
@@ -123,6 +131,20 @@ class TUI(App):
             self.music_controls.load_song(song_path)
             self.music_controls.play_song()
             self.track_timer.resume()
+
+    def action_repeat_song(self):
+        self.music_controls.repeat_mode = not self.music_controls.repeat_mode
+        label_text = "↻" if self.music_controls.repeat_mode else ""
+
+        self.query_one("#repeat-label", Label).update(label_text)
+
+    def check_pygame_events(self):
+        for event in pygame.event.get():
+            if (
+                event.type == self.music_controls.SONG_FINISHED
+                and self.music_controls.repeat_mode
+            ):
+                self.music_controls.play_song()
 
     def update_song_progress(self):
         # Gets the current time of the currently playing song
