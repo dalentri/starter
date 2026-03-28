@@ -36,10 +36,10 @@ class TUI(App):
         yield Header()
         with Horizontal():
             yield DataTable()
-            with Vertical():
-                with Center():
-                    with Middle():
-                        with Horizontal():
+            with Vertical(id="right-side"):
+                with Middle():
+                    with Center():
+                        with Horizontal(id="status-row"):
                             yield Label(self.current_song)
                             yield Label("", id="repeat-label")
                         yield ProgressBar()

@@ -1,0 +1,10 @@
+#status-row {
+  content-align: center middle;
+  height: 1;
+  width: auto;
+}
+
+#status-row Label {
+  margin: 0;
+  margin-right: 2;
+}
