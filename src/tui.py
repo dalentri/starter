@@ -3,7 +3,6 @@ import pygame
 from textual.app import App, ComposeResult
 from textual.widgets import DataTable, ProgressBar, Header, Footer, Label
 from textual.containers import Center, Middle, Horizontal, Vertical
-from textual.reactive import reactive
 from textual.binding import Binding
 from textual.content import Content
 
@@ -18,13 +17,11 @@ class TUI(App):
     BINDINGS = [
         Binding(key="q", action="quit", description="Quit the app"),
         Binding(key="h", action="play_pause", description="Play/pause"),
-        # Binding(key="r", action="repeat_song", description="Repeat: OFF"),
+        Binding(key="r", action="repeat_song", description="Repeat"),
         # vim bindings
         Binding(key="j", action="move_down", description="Move down"),
         Binding(key="k", action="move_up", description="Move up"),
     ]
-
-    repeat_mode = reactive(False, always_update=True)
 
     def __init__(self) -> None:
         super().__init__()
@@ -42,7 +39,9 @@ class TUI(App):
             with Vertical():
                 with Center():
                     with Middle():
-                        yield Label(self.current_song)
+                        with Horizontal():
+                            yield Label(self.current_song)
+                            yield Label("", id="repeat-label")
                         yield ProgressBar()
         yield Footer()
 
@@ -118,20 +117,17 @@ class TUI(App):
             else:
                 self.music_controls.load_song(song_path)
                 self.music_controls.play_song()
+                self.repeat_mode = False
                 self.track_timer.resume()
         else:
             self.music_controls.unpause_song()
             self.track_timer.resume()
 
     def action_repeat_song(self):
-        self.repeat_mode = not self.repeat_mode
-        self.music_controls.repeat_mode = self.repeat_mode
+        self.music_controls.repeat_mode = not self.music_controls.repeat_mode
+        label_text = "↻" if self.music_controls.repeat_mode else ""
 
-    def watch_repeat_mode(self, repeat_mode: bool):
-        new_label = "Repeat: ON" if repeat_mode else "Repeat: OFF"
-        self.music_controls.repeat_mode = repeat_mode
-        self.bind("r", "repeat_song", description=new_label)
-        self.refresh_bindings()
+        self.query_one("#repeat-label", Label).update(label_text)
 
     def check_pygame_events(self):
         for event in pygame.event.get():
