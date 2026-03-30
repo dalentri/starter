@@ -51,17 +51,13 @@ class MusicControls:
         self.song_playing = True
         self.song_elapsed = True
 
-    def skip_song(self):
+    # TODO: Add volume controls
+    def set_volume_up(self):
         pass
 
-    def set_shuffle(self):
+    def set_volume_down(self):
         pass
 
-    def get_volume(self):
-        pass
-
-    def set_volume(self):
-        pass
     def get_pos(self):
         return music.get_pos()
 
