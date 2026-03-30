@@ -17,9 +17,11 @@ class MusicControls:
         self.shuffle_mode = False
         self.repeat_mode = False
 
+        # Initialize an event that triggers when a song ends
         self.SONG_FINISHED = pygame.USEREVENT + 1
         music.set_endevent(self.SONG_FINISHED)
 
+        # Set a dummy os driver for pygame to not throw an error on event trigger
         os.environ["SDL_VIDEODRIVER"] = "dummy"
         pygame.init()
         pygame.display.set_mode((1, 1))
