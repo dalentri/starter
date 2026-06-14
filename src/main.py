@@ -1,5 +1,5 @@
 # Import the files from the same directory
-from src.tui import TUI
+from tui import TUI
 
 
 def main():

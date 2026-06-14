@@ -7,8 +7,8 @@ from textual.binding import Binding
 from textual.content import Content
 
 # File imports
-from src.read_dir import ReadDir
-from src.music_controls import MusicControls
+from read_dir import ReadDir
+from music_controls import MusicControls
 
 
 class TUI(App):
