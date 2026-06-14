@@ -17,11 +17,12 @@ class ReadDir:
         # Inits a list of the music that will be found later
         music_list = []
         unformatted_times = []
+        supported_formats = {".mp3", ".flac", ".wav"}
 
         # Goes through the folder and lists all files
         for item in music_folder.iterdir():
             if (
-                not item.name.endswith(".m4a")
+                item.suffix in supported_formats
                 and not item.name.startswith(".")
                 and item.is_file()
             ):
